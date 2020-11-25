@@ -1,0 +1,51 @@
+plugins {
+	id "java"
+	id "io.spring.dependency-management" version "1.0.10.RELEASE"
+	id 'info.solidsoft.pitest' version '1.5.2'
+}
+
+group = 'com.github.eugenelesnov'
+version = '0.0.1-SNAPSHOT'
+
+wrapper {
+	gradleVersion = '6.3'
+}
+
+dependencyManagement {
+	imports { mavenBom("org.springframework.boot:spring-boot-dependencies:2.3.3.RELEASE") }
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.apache.httpcomponents:httpclient:4.5'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation('org.assertj:assertj-core')
+	testImplementation('org.mockito:mockito-core:3.1.0')
+	testImplementation('info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0')
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: "junit", module: "junit"
+		exclude module: "junit-vintage-engine"
+	}
+	pitest("io.github.wmaarts:pitest-mutation-testing-elements-plugin:0.2.1")
+}
+
+test {
+	useJUnitPlatform()
+}
+
+pitest {
+	junit5PluginVersion = "0.12"
+	targetClasses = ['com.github.eugenelesnov.rest.*']
+	threads = 2
+	outputFormats = ["HTML2", "XML"]
+	timestampedReports = false
+	enableDefaultIncrementalAnalysis = true
+}
