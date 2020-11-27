@@ -4,6 +4,8 @@ plugins {
 	id 'info.solidsoft.pitest' version '1.5.2'
 }
 
+apply plugin: "maven"
+
 group = 'com.github.eugenelesnov'
 version = '0.0.1-SNAPSHOT'
 
