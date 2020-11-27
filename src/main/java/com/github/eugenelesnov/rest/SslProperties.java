@@ -20,13 +20,17 @@ public class SslProperties {
      */
     private boolean enabled;
     private String keyStore;
-    private char[] keyStorePassword;
+    private String keyStorePassword;
     private String keyAlias;
     private String trustStore;
-    private char[] trustStorePassword;
+    private String trustStorePassword;
 
     public boolean checkWhetherSslParametersArePresent() {
         return checkIfKeystoreParametersArePresent() && checkIfTruststoreParametersArePresent();
+    }
+
+    public char[] getKeyStorePassword() {
+        return keyStorePassword.toCharArray();
     }
 
     private boolean checkIfTruststoreParametersArePresent() {

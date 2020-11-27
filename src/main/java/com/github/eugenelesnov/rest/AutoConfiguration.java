@@ -16,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.security.KeyStore;
-import java.util.Arrays;
 
 @Configuration
 @ConditionalOnMissingBean(RestTemplate.class)
@@ -63,7 +62,8 @@ public class AutoConfiguration {
         } catch (Exception ex) {
             throw new IllegalStateException("Unable to instantiate SSL context", ex);
         } finally {
-            Arrays.fill(sslProperties.getKeyStorePassword(), (char) 0);
+            sslProperties.setKeyStorePassword(null);
+            sslProperties.setTrustStorePassword(null);
         }
     }
 }
