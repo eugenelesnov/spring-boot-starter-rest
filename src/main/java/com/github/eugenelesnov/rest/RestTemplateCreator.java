@@ -23,10 +23,10 @@ import java.util.Arrays;
 public class RestTemplateCreator {
 
     private final RestTemplateBuilder restTemplateBuilder;
-    private final SslProperties keyStore;
+    private final SslProperties sslProperties;
 
     public RestTemplate createRestTemplate() {
-        if (keyStore.isEnabled() && keyStore.checkWhetherSslParametersArePresent()) {
+        if (sslProperties.isEnabled() && sslProperties.checkWhetherSslParametersArePresent()) {
             return createSslRestTemplate();
         }
         return createRegularRestTemplate();
@@ -47,16 +47,16 @@ public class RestTemplateCreator {
 
     private SSLContext buildSslContext() {
         try {
-            char[] keyStorePassword = keyStore.getKeyStorePassword();
+            char[] keyStorePassword = sslProperties.getKeyStorePassword();
             return new SSLContextBuilder()
                 .loadKeyMaterial(
-                    KeyStore.getInstance(new File(keyStore.getKeyStore()), keyStorePassword),
-                    keyStorePassword
+                        KeyStore.getInstance(new File(sslProperties.getKeyStore()), keyStorePassword),
+                        keyStorePassword
                 ).build();
         } catch (Exception ex) {
             throw new IllegalStateException("Unable to instantiate SSL context", ex);
         } finally {
-            Arrays.fill(keyStore.getKeyStorePassword(), (char) 0);
+            Arrays.fill(sslProperties.getKeyStorePassword(), (char) 0);
         }
     }
 
