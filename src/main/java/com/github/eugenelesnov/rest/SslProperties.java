@@ -15,8 +15,8 @@ import static com.github.eugenelesnov.rest.Utils.isNullOrEmpty;
 public class SslProperties {
 
     /**
-     * NB! Если этот параметр примет значение true, но остальные параметры
-     * не будут проставлены, бросится исключение
+     * NB! If this parameter is true, but other parameters are not set,
+     * an exception will be thrown
      */
     private boolean enabled;
     private String keyStore;
