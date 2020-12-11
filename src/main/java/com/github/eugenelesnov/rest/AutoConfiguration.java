@@ -6,7 +6,6 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -19,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.security.KeyStore;
@@ -33,17 +33,16 @@ public class AutoConfiguration {
     private final SslProperties sslProperties;
 
     @Bean
-    public RestTemplate restTemplate() {
+    public RestTemplate restTemplate(HostnameVerifier hostnameVerifier) {
         if (sslProperties.isEnabled() && sslProperties.checkWhetherSslParametersArePresent()) {
-            return createSslRestTemplate();
+            return createSslRestTemplate(hostnameVerifier);
         }
         return createRegularRestTemplate();
     }
 
-    private RestTemplate createSslRestTemplate() {
+    private RestTemplate createSslRestTemplate(HostnameVerifier hostnameVerifier) {
         SSLContext sslContext = buildSslContext();
-        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContext,
-                NoopHostnameVerifier.INSTANCE);
+        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
 
         Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", new PlainConnectionSocketFactory())
