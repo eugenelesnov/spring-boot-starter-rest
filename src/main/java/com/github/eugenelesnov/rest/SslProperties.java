@@ -24,6 +24,7 @@ public class SslProperties {
     private String keyAlias;
     private String trustStore;
     private String trustStorePassword;
+    private Integer connectionDefaultMaxPerRoute = 25;
 
     public boolean checkWhetherSslParametersArePresent() {
         return checkIfKeystoreParametersArePresent() && checkIfTruststoreParametersArePresent();

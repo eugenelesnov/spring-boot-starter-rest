@@ -51,6 +51,7 @@ public class AutoConfiguration {
                 .build();
 
         PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(registry);
+        connectionManager.setDefaultMaxPerRoute(sslProperties.getConnectionDefaultMaxPerRoute());
 
         HttpClient httpClient = HttpClients.custom()
                 .setSSLSocketFactory(socketFactory)
