@@ -16,7 +16,7 @@ allprojects {
 }
 ```
 
-2. Add dependency (_do not forget to change tag_):
+2. Add dependency (_do not forget to change the tag_):
 ```groovy
 dependencies {
     implementation 'com.github.EugeneLesnov:spring-boot-starter-rest:Tag'
