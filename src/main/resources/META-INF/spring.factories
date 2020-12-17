@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.github.eugenelesnov.rest.AutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.github.eugenelesnov.rest.config.RestTemplateAutoConfiguration, com.github.eugenelesnov.rest.config.SslRestTemplateAutoConfiguration

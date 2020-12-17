@@ -1,5 +1,7 @@
-package com.github.eugenelesnov.rest;
+package com.github.eugenelesnov.rest.config;
 
+import com.github.eugenelesnov.rest.SslProperties;
+import com.github.eugenelesnov.rest.exception.SslContextException;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.config.Registry;
@@ -11,14 +13,13 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.security.KeyStore;
@@ -27,22 +28,22 @@ import java.security.KeyStore;
 @ConditionalOnMissingBean(RestTemplate.class)
 @EnableConfigurationProperties(SslProperties.class)
 @RequiredArgsConstructor
-public class AutoConfiguration {
+public class SslRestTemplateAutoConfiguration {
 
-    private final RestTemplateBuilder restTemplateBuilder;
     private final SslProperties sslProperties;
 
     @Bean
-    public RestTemplate restTemplate(HostnameVerifier hostnameVerifier) {
-        if (sslProperties.isEnabled() && sslProperties.checkWhetherSslParametersArePresent()) {
-            return createSslRestTemplate(hostnameVerifier);
+    @ConditionalOnProperty(value = "server.ssl.enabled", havingValue = "true")
+    public RestTemplate restTemplate() {
+        if (sslProperties.checkWhetherSslParametersArePresent()) {
+            return createSslRestTemplate();
         }
-        return createRegularRestTemplate();
+        throw new SslContextException("Missing required SSL parameters");
     }
 
-    private RestTemplate createSslRestTemplate(HostnameVerifier hostnameVerifier) {
+    private RestTemplate createSslRestTemplate() {
         SSLContext sslContext = buildSslContext();
-        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
+        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContext);
 
         Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", new PlainConnectionSocketFactory())
@@ -62,10 +63,6 @@ public class AutoConfiguration {
         return new RestTemplate(factory);
     }
 
-    private RestTemplate createRegularRestTemplate() {
-        return restTemplateBuilder.build();
-    }
-
     private SSLContext buildSslContext() {
         try {
             char[] keyStorePassword = sslProperties.getKeyStorePassword();
@@ -75,8 +72,9 @@ public class AutoConfiguration {
                             keyStorePassword
                     ).build();
         } catch (Exception ex) {
-            throw new IllegalStateException("Unable to instantiate SSL context", ex);
+            throw new SslContextException("An error occurred while building SSL context", ex);
         } finally {
+            // For security issues
             sslProperties.setKeyStorePassword(null);
             sslProperties.setTrustStorePassword(null);
         }
