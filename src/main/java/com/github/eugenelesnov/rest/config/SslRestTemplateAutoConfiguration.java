@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.security.KeyStore;
@@ -34,16 +35,16 @@ public class SslRestTemplateAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(value = "server.ssl.enabled", havingValue = "true")
-    public RestTemplate restTemplate() {
+    public RestTemplate restTemplate(HostnameVerifier hostnameVerifier) {
         if (sslProperties.checkWhetherSslParametersArePresent()) {
-            return createSslRestTemplate();
+            return createSslRestTemplate(hostnameVerifier);
         }
         throw new SslContextException("Missing required SSL parameters");
     }
 
-    private RestTemplate createSslRestTemplate() {
+    private RestTemplate createSslRestTemplate(HostnameVerifier hostnameVerifier) {
         SSLContext sslContext = buildSslContext();
-        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContext);
+        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
 
         Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", new PlainConnectionSocketFactory())

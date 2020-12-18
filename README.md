@@ -35,6 +35,31 @@ server:
         trust-store-password: password
 ```
 
+4. Additionally, you can implement HostnameVerifier interface and make it a bean. 
+Otherwise, starter uses NoopHostnameVerifier instance (verification is off).
+
+Here's a short example:
+``` java
+public class CustomHostnameVerifier implements HostnameVerifier {
+
+    public CustomHostnameVerifier() {}
+
+    @Override
+    public boolean verify(String hostname, SSLSession session) {
+        // do your verify stuff
+        return false;
+    }
+}
+```
+
+Then:
+``` java
+@Bean
+public HostnameVerifier hostnameVerifier() {
+    return new CustomHostnameVerifier();
+}
+```
+
 ## How to generate self-signed certificate with _keytool_ ?
 
 ```
