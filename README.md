@@ -3,7 +3,7 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 # spring-boot-starter-rest
-Spring Boot starter provides fast SSL setup for your backend 
+Spring Boot starter provides fast SSL RestTemplate setup for your backend 
 
 ## How to use
 
@@ -17,14 +17,14 @@ allprojects {
 ```
 
 2. Add dependency (_do not forget to change the tag_):
-```groovy
+``` groovy
 dependencies {
     implementation 'com.github.EugeneLesnov:spring-boot-starter-rest:Tag'
 }
 ```
 
-2. Provide required SSL properties:
-```
+3. Provide required SSL properties:
+``` yaml
 server:
     ssl:
         enabled: true
