@@ -33,6 +33,7 @@ server:
         key-alias: alias
         trust-store: /path/to/truststore
         trust-store-password: password
+        connection-default-max-per-route: 40 # optional property, defaults to 25
 ```
 
 4. Additionally, you can implement HostnameVerifier interface and make it a bean. 
